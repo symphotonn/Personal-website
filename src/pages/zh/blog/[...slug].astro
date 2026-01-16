@@ -1,0 +1,119 @@
+---
+import Base from '../../../layouts/Base.astro';
+import Button from '../../../components/Button.astro';
+import TableOfContents from '../../../components/TableOfContents.astro';
+import { getCollection } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import { getLocalizedPath } from '../../../i18n/translations';
+import { calculateReadingTime, formatReadingTime } from '../../../utils/readingTime';
+
+const lang = 'zh';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await post.render();
+
+const formattedDate = post.data.date.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const formattedUpdatedDate = post.data.updatedDate?.toLocaleDateString('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const readingTime = formatReadingTime(calculateReadingTime(post.body, lang), lang);
+---
+
+<Base title={`${post.data.title} — LYP`} description={post.data.description}>
+  <article class="container">
+    <header class="post-header">
+      <Button href={getLocalizedPath('/blog', lang)} variant="ghost">&larr; 返回博客</Button>
+      <h1>{post.data.title}</h1>
+      <div class="post-meta text-muted">
+        <time datetime={post.data.date.toISOString()}>{formattedDate}</time>
+        <span> · {readingTime}</span>
+        {formattedUpdatedDate && (
+          <span> · 更新于 {formattedUpdatedDate}</span>
+        )}
+      </div>
+      {post.data.tags && post.data.tags.length > 0 && (
+        <div class="post-tags">
+          {post.data.tags.map(tag => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <TableOfContents headings={headings} lang={lang} />
+
+    <div class="prose post-content">
+      <Content />
+    </div>
+
+    <footer class="post-footer">
+      <Button href={getLocalizedPath('/blog', lang)} variant="ghost">&larr; 返回博客</Button>
+    </footer>
+  </article>
+</Base>
+
+<style>
+  article {
+    max-width: var(--max-width);
+  }
+
+  .post-header {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .post-header h1 {
+    margin-top: var(--space-lg);
+    margin-bottom: var(--space-sm);
+    font-size: 2rem;
+  }
+
+  .post-meta {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .tag {
+    font-size: 0.8125rem;
+    padding: var(--space-xs) var(--space-sm);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+  }
+
+  .post-content {
+    margin-bottom: var(--space-3xl);
+  }
+
+  .post-footer {
+    margin-top: var(--space-3xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+</style>

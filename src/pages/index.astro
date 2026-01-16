@@ -1,0 +1,113 @@
+---
+import Base from '../layouts/Base.astro';
+import BlogCard from '../components/BlogCard.astro';
+import Button from '../components/Button.astro';
+import { getCollection } from 'astro:content';
+import { getLangFromUrl, useTranslations } from '../i18n/translations';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+// Get latest 3 blog posts
+const allPosts = await getCollection('blog');
+const latestPosts = allPosts
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<Base title="LYP — Freedom Technology">
+  <div class="container">
+    <!-- Hero Section -->
+    <section class="hero">
+      <h1>{t('home.title')}</h1>
+      <p class="hero-subtitle text-muted">
+        {t('home.subtitle')}
+      </p>
+      <div class="hero-actions">
+        <Button href="/blog">{t('home.cta')}</Button>
+      </div>
+    </section>
+
+    <!-- Latest Posts Section -->
+    {latestPosts.length > 0 && (
+      <section class="posts-section">
+        <div class="section-header">
+          <h2 class="section-title">{t('home.latestWriting')}</h2>
+          <Button href="/blog" variant="ghost">{t('home.viewAll')} &rarr;</Button>
+        </div>
+        <div class="posts-grid">
+          {latestPosts.map(post => (
+            <BlogCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date}
+              slug={post.slug}
+            />
+          ))}
+        </div>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .hero {
+    text-align: center;
+    padding: var(--space-3xl) 0;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: var(--space-md);
+  }
+
+  .hero-subtitle {
+    font-size: 1.125rem;
+    line-height: 1.7;
+    margin-bottom: var(--space-xl);
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: var(--space-md);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: var(--space-lg);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+  }
+
+  .section-header .section-title {
+    margin-bottom: 0;
+  }
+
+  .posts-section {
+    padding: var(--space-2xl) 0;
+  }
+
+  .posts-grid {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 {
+      font-size: 2rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+    }
+  }
+</style>

@@ -1,0 +1,129 @@
+---
+import { getLocalizedPath, type Lang } from '../i18n/translations';
+
+interface Props {
+  title: string;
+  description: string;
+  date: Date;
+  slug: string;
+  tags?: string[];
+  readingTime?: string;
+  lang?: Lang;
+}
+
+const { title, description, date, slug, tags = [], readingTime, lang = 'en' } = Astro.props;
+
+const formattedDate = date.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const readMoreText = lang === 'zh' ? '阅读更多' : 'Read more';
+const blogPath = getLocalizedPath(`/blog/${slug}`, lang);
+---
+
+<article class="blog-card">
+  <a href={blogPath} class="blog-card-link">
+    <div class="blog-card-header">
+      <div class="blog-card-meta text-muted">
+        <time datetime={date.toISOString()} class="blog-card-date">{formattedDate}</time>
+        {readingTime && (
+          <>
+            <span class="blog-card-separator">·</span>
+            <span class="blog-card-reading-time">{readingTime}</span>
+          </>
+        )}
+      </div>
+      {tags.length > 0 && (
+        <div class="blog-card-tags">
+          {tags.slice(0, 3).map(tag => (
+            <span class="blog-card-tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </div>
+    <h3 class="blog-card-title">{title}</h3>
+    <p class="blog-card-description text-muted">{description}</p>
+    <span class="blog-card-read-more">{readMoreText} &rarr;</span>
+  </a>
+</article>
+
+<style>
+  .blog-card {
+    padding: var(--space-lg);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-fast);
+  }
+
+  .blog-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+  }
+
+  .blog-card-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .blog-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-xs);
+  }
+
+  .blog-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 0.8125rem;
+  }
+
+  .blog-card-separator {
+    color: var(--color-border);
+  }
+
+  .blog-card-reading-time {
+    font-size: 0.8125rem;
+  }
+
+  .blog-card-tags {
+    display: flex;
+    gap: var(--space-xs);
+    flex-wrap: wrap;
+  }
+
+  .blog-card-tag {
+    font-size: 0.6875rem;
+    padding: 0.125rem 0.5rem;
+    background-color: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+    text-transform: lowercase;
+  }
+
+  .blog-card-title {
+    margin: var(--space-sm) 0;
+    font-size: 1.125rem;
+    color: var(--color-text);
+  }
+
+  .blog-card-description {
+    font-size: 0.9375rem;
+    margin-bottom: var(--space-md);
+    line-height: 1.6;
+  }
+
+  .blog-card-read-more {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-accent);
+  }
+</style>

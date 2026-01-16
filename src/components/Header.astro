@@ -1,0 +1,230 @@
+---
+import ThemeToggle from './ThemeToggle.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { getLangFromUrl, useTranslations, getLocalizedPath } from '../i18n/translations';
+
+const lang = getLangFromUrl(Astro.url);
+const t = useTranslations(lang);
+
+const navLinks = [
+  { href: '/', labelKey: 'nav.home' as const },
+  { href: '/about', labelKey: 'nav.about' as const },
+  { href: '/blog', labelKey: 'nav.blog' as const },
+  { href: '/projects', labelKey: 'nav.projects' as const },
+];
+
+const currentPath = Astro.url.pathname;
+
+// Helper to check if a path is active (accounting for language prefix)
+function isActive(href: string): boolean {
+  const localizedHref = getLocalizedPath(href, lang);
+  if (href === '/') {
+    return currentPath === '/' || currentPath === '/zh' || currentPath === '/zh/';
+  }
+  return currentPath === localizedHref || currentPath.startsWith(localizedHref + '/');
+}
+---
+
+<header>
+  <nav class="container container-wide">
+    <a href={getLocalizedPath('/', lang)} class="logo">LYP</a>
+
+    <div class="nav-right">
+      <ul class="nav-links">
+        {navLinks.map(link => (
+          <li>
+            <a
+              href={getLocalizedPath(link.href, lang)}
+              class:list={[{ active: isActive(link.href) }]}
+            >
+              {t(link.labelKey)}
+            </a>
+          </li>
+        ))}
+      </ul>
+      <LanguageSwitcher />
+      <ThemeToggle />
+    </div>
+
+    <button id="mobile-menu-toggle" class="mobile-menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </nav>
+
+  <div id="mobile-nav" class="mobile-nav">
+    <ul>
+      {navLinks.map(link => (
+        <li>
+          <a
+            href={getLocalizedPath(link.href, lang)}
+            class:list={[{ active: isActive(link.href) }]}
+          >
+            {t(link.labelKey)}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <div class="mobile-controls">
+      <LanguageSwitcher />
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color var(--transition-base);
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+
+  .logo {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+  }
+
+  .logo:hover {
+    color: var(--color-accent);
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+  }
+
+  .nav-links {
+    display: flex;
+    list-style: none;
+    gap: var(--space-lg);
+  }
+
+  .nav-links a {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding: var(--space-sm) 0;
+    position: relative;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--color-text);
+  }
+
+  .nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-accent);
+    border-radius: 1px;
+  }
+
+  .mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    padding: var(--space-sm);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .mobile-menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background-color: var(--color-text);
+    transition: all var(--transition-fast);
+  }
+
+  .mobile-nav {
+    display: none;
+    padding: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    background-color: var(--color-bg);
+  }
+
+  .mobile-nav.open {
+    display: block;
+  }
+
+  .mobile-nav ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+  }
+
+  .mobile-nav a {
+    display: block;
+    padding: var(--space-sm) 0;
+    color: var(--color-muted);
+    font-weight: 500;
+  }
+
+  .mobile-nav a:hover,
+  .mobile-nav a.active {
+    color: var(--color-text);
+  }
+
+  .mobile-controls {
+    margin-top: var(--space-md);
+    padding-top: var(--space-md);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+  }
+
+  @media (max-width: 768px) {
+    .nav-right {
+      display: none;
+    }
+
+    .mobile-menu-toggle {
+      display: flex;
+    }
+  }
+</style>
+
+<script>
+  function initMobileMenu() {
+    const toggle = document.getElementById('mobile-menu-toggle');
+    const mobileNav = document.getElementById('mobile-nav');
+
+    if (!toggle || !mobileNav) return;
+
+    toggle.addEventListener('click', () => {
+      mobileNav.classList.toggle('open');
+    });
+
+    // Close on link click
+    mobileNav.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileNav.classList.remove('open');
+      });
+    });
+  }
+
+  initMobileMenu();
+  document.addEventListener('astro:after-swap', initMobileMenu);
+</script>

@@ -1,0 +1,8 @@
+{
+  "name": "Sovereign ID",
+  "description": "Decentralized identity system that lets you own your digital identity without relying on any single platform or authority.",
+  "github": "https://github.com/yourusername/sovereign-id",
+  "status": "planned",
+  "tags": ["identity", "cryptography", "decentralized"],
+  "featured": false
+}

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#FAF7F2"/>
+  <rect x="0" y="580" width="1200" height="50" fill="#722F37"/>
+  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#2D2A26" text-anchor="middle">LYP</text>
+  <text x="600" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="32" fill="#6B6560" text-anchor="middle">Freedom Technology</text>
+  <text x="600" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="#6B6560" text-anchor="middle">Tools that make individuals more sovereign</text>
+</svg>

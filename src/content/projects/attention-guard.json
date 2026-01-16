@@ -1,0 +1,9 @@
+{
+  "name": "Attention Guard",
+  "description": "Browser extension that helps you reclaim your focus by blocking attention-harvesting patterns and dark design on popular websites.",
+  "url": "https://example.com/attention-guard",
+  "github": "https://github.com/yourusername/attention-guard",
+  "status": "active",
+  "tags": ["attention", "browser-extension", "productivity"],
+  "featured": true
+}
