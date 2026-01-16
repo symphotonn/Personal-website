@@ -52,11 +52,33 @@ const tocTitle = lang === 'zh' ? '目录' : 'Contents';
 )}
 
 <script>
-  // Scroll-spy: highlight active section in TOC
-  function initScrollSpy() {
+  function initTOC() {
+    const tocSidebar = document.querySelector('.toc-sidebar') as HTMLElement;
     const tocLinks = document.querySelectorAll('[data-toc-link]');
-    if (tocLinks.length === 0) return;
 
+    if (!tocSidebar || tocLinks.length === 0) return;
+
+    // --- Show/hide sidebar based on scroll position ---
+    const SCROLL_THRESHOLD = 200;
+    let sidebarVisible = false;
+
+    function updateSidebarVisibility() {
+      const shouldShow = window.scrollY > SCROLL_THRESHOLD;
+
+      if (shouldShow !== sidebarVisible) {
+        sidebarVisible = shouldShow;
+        if (shouldShow) {
+          tocSidebar.classList.add('toc-sidebar-visible');
+        } else {
+          tocSidebar.classList.remove('toc-sidebar-visible');
+        }
+      }
+    }
+
+    window.addEventListener('scroll', updateSidebarVisibility, { passive: true });
+    updateSidebarVisibility(); // Check initial state
+
+    // --- Scroll-spy: highlight active section ---
     const headingIds = Array.from(tocLinks).map(link => link.getAttribute('data-toc-link'));
     const headings = headingIds
       .map(id => document.getElementById(id!))
@@ -68,11 +90,9 @@ const tocTitle = lang === 'zh' ? '目录' : 'Contents';
 
     const observer = new IntersectionObserver(
       (entries) => {
-        // Find the first visible heading
         const visibleEntries = entries.filter(entry => entry.isIntersecting);
 
         if (visibleEntries.length > 0) {
-          // Get the topmost visible heading
           const topEntry = visibleEntries.reduce((top, entry) => {
             return entry.boundingClientRect.top < top.boundingClientRect.top ? entry : top;
           });
@@ -105,8 +125,8 @@ const tocTitle = lang === 'zh' ? '目录' : 'Contents';
   }
 
   // Initialize on page load and after navigation
-  initScrollSpy();
-  document.addEventListener('astro:page-load', initScrollSpy);
+  initTOC();
+  document.addEventListener('astro:page-load', initTOC);
 </script>
 
 <style>
@@ -125,6 +145,14 @@ const tocTitle = lang === 'zh' ? '目录' : 'Contents';
       top: 50%;
       transform: translateY(-50%);
       z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .toc-sidebar.toc-sidebar-visible {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     .toc-sidebar-edge {
@@ -143,19 +171,6 @@ const tocTitle = lang === 'zh' ? '目录' : 'Contents';
       justify-content: center;
       cursor: pointer;
       transition: opacity var(--transition-fast);
-      animation: pulse-hint 2s ease-in-out 3;
-      animation-delay: 1s;
-    }
-
-    @keyframes pulse-hint {
-      0%, 100% {
-        box-shadow: 0 0 0 0 transparent;
-        border-color: var(--color-border);
-      }
-      50% {
-        box-shadow: 0 0 8px 2px var(--color-accent);
-        border-color: var(--color-accent);
-      }
     }
 
     .toc-sidebar-indicator {
@@ -187,7 +202,6 @@ const tocTitle = lang === 'zh' ? '目录' : 'Contents';
 
     .toc-sidebar:hover .toc-sidebar-edge {
       opacity: 0;
-      animation: none;
     }
 
     .toc-sidebar:hover .toc-sidebar-panel {
