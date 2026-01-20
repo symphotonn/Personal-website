@@ -12,8 +12,8 @@ export async function GET(context: APIContext) {
   );
 
   return rss({
-    title: 'LYP — Freedom Technology',
-    description: 'Writing about freedom technology, privacy, ownership, and building tools for individual sovereignty.',
+    title: 'LYP — Learn, Build, Freedom',
+    description: 'Writing about learning with AI, becoming a super individual, and pursuing a life of freedom and curiosity.',
     site: context.site!,
     items: sortedPosts.map((post) => ({
       title: post.data.title,

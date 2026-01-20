@@ -16,8 +16,8 @@ export const translations = {
     'nav.projects': 'Projects',
 
     // Home page
-    'home.title': 'Building freedom technology',
-    'home.subtitle': 'Tools and ideas that make individuals more sovereign. Privacy, ownership, truth — technology that serves you, not the other way around.',
+    'home.title': 'Learn, build, and pursue freedom',
+    'home.subtitle': 'Exploring how to become a super individual — learning with AI, building in public, and pursuing a life of freedom and curiosity.',
     'home.cta': 'Read the blog',
     'home.latestWriting': 'Latest writing',
     'home.viewAll': 'View all',
@@ -48,8 +48,8 @@ export const translations = {
     'nav.projects': '项目',
 
     // Home page
-    'home.title': '构建自由技术',
-    'home.subtitle': '让个人更加自主的工具和理念。隐私、所有权、真相——为你服务的技术，而非相反。',
+    'home.title': '学习、创造、追求自由',
+    'home.subtitle': '探索如何成为超级个体——与AI一起学习，公开创造，追求自由与好奇的人生。',
     'home.cta': '阅读博客',
     'home.latestWriting': '最新文章',
     'home.viewAll': '查看全部',
